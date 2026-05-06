@@ -1,1 +1,350 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebar Market Dashboard — Texas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+function renderCards(containerId, items) {
+  var el = document.getElementById(containerId);
+  el.innerHTML = items.map(function(item) {
+    var arrow = item.signal==='bull' ? '▲ BULL' : item.signal==='bear' ? '▼ BEAR' : '— NEUT';
+    return '<div class="ind-card '+item.signal+'">'
+      +'<div class="ind-top"><span class="ind-name">'+item.name+'</span>'
+      +'<span class="signal-pill '+item.signal+'">'+arrow+'</span></div>'
+      +'<div class="ind-value '+item.signal+'">'+item.value
+      +'<span class="ind-unit">'+item.unit+'</span></div>'
+      +'<div class="ind-change '+item.signal+'">'+item.change+'</div>'
+      +'<div class="ind-meta">'+item.note+'</div></div>';
+  }).join('');
+}
+function countSignals(sections) {
+  var all = []; sections.forEach(function(s){all=all.concat(s);});
+  var bull=all.filter(function(i){return i.signal==='bull';}).length;
+  var bear=all.filter(function(i){return i.signal==='bear';}).length;
+  var neutral=all.filter(function(i){return i.signal==='neutral';}).length;
+  document.getElementById('bull-count').textContent=bull;
+  document.getElementById('bear-count').textContent=bear;
+  document.getElementById('neutral-count').textContent=neutral;
+  var v=document.getElementById('overall-verdict');
+  if(bull>bear+2){v.textContent='⬆ Leaning Bullish';v.style.color='var(--bull)';}
+  else if(bear>bull){v.textContent='⬇ Leaning Bearish';v.style.color='var(--bear)';}
+  else{v.textContent='↔ Mixed Signals';v.style.color='var(--neutral)';}
+}
+</script>
+
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --bg2: #161b26; --bg3: #1e2535;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0; --text2: #8b92a8; --text3: #555e75;
+    --bull: #3ecf8e; --bull-bg: rgba(62,207,142,0.10); --bull-border: rgba(62,207,142,0.25);
+    --bear: #f26b6b; --bear-bg: rgba(242,107,107,0.10); --bear-border: rgba(242,107,107,0.25);
+    --neutral: #8b92a8; --neutral-bg: rgba(139,146,168,0.10);
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.5; min-height:100vh; padding:2rem 1.5rem 3rem; }
+  .page { max-width:1100px; margin:0 auto; }
+  .header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:1px solid var(--border); }
+  .header-left h1 { font-size:22px; font-weight:600; letter-spacing:-0.3px; margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+  .header-left p { font-size:13px; color:var(--text2); }
+  .badge { font-size:11px; font-weight:500; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); background:var(--bg2); font-family:'DM Mono',monospace; }
+  .tx-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; background:rgba(245,166,35,0.12); border:1px solid rgba(245,166,35,0.3); color:#f5a623; letter-spacing:0.05em; }
+  .summary-bar { display:flex; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:1.75rem; overflow:hidden; }
+  .summary-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:1rem; gap:4px; border-right:1px solid var(--border); }
+  .summary-item:last-child { border-right:none; }
+  .summary-count { font-size:26px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-1px; }
+  .summary-count.bull { color:var(--bull); } .summary-count.bear { color:var(--bear); } .summary-count.neutral { color:var(--neutral); }
+  .summary-count.verdict { font-size:15px; letter-spacing:-0.3px; font-family:'DM Sans',sans-serif; text-align:center; line-height:1.3; }
+  .summary-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; font-weight:500; }
+  .section-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text3); margin:1.75rem 0 0.75rem; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .ind-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:6px; transition:border-color 0.15s; }
+  .ind-card:hover { border-color:var(--border2); }
+  .ind-card.bull { border-left:2px solid var(--bull); } .ind-card.bear { border-left:2px solid var(--bear); } .ind-card.neutral { border-left:2px solid #3a4259; }
+  .ind-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .ind-name { font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; }
+  .signal-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .signal-pill.bull { background:var(--bull-bg); color:var(--bull); border:1px solid var(--bull-border); }
+  .signal-pill.bear { background:var(--bear-bg); color:var(--bear); border:1px solid var(--bear-border); }
+  .signal-pill.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(139,146,168,0.25); }
+  .ind-value { font-size:20px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-0.5px; line-height:1; }
+  .ind-value.bull { color:var(--bull); } .ind-value.bear { color:var(--bear); } .ind-value.neutral { color:var(--text); }
+  .ind-unit { font-size:11px; font-weight:400; color:var(--text2); margin-left:4px; font-family:'DM Sans',sans-serif; }
+  .ind-change { font-size:12px; font-weight:500; }
+  .ind-change.bull { color:var(--bull); } .ind-change.bear { color:var(--bear); } .ind-change.neutral { color:var(--text2); }
+  .ind-meta { font-size:11px; color:var(--text3); }
+  .metro-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+  .metro-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+  .metro-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .metro-outlook { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; }
+  .metro-outlook.bull { background:var(--bull-bg); color:var(--bull); border:1px solid var(--bull-border); }
+  .metro-outlook.bear { background:var(--bear-bg); color:var(--bear); border:1px solid var(--bear-border); }
+  .metro-outlook.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(139,146,168,0.25); }
+  .metro-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); }
+  .metro-row:last-of-type { border-bottom:none; }
+  .metro-row-label { font-size:11px; color:var(--text3); }
+  .metro-row-val { font-size:12px; font-weight:500; }
+  .metro-row-val.bull { color:var(--bull); } .metro-row-val.bear { color:var(--bear); } .metro-row-val.neutral { color:var(--text2); }
+  .metro-note { font-size:10px; color:var(--text3); margin-top:8px; }
+  .footer { margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .footer-note { font-size:11px; color:var(--text3); max-width:620px; }
+  @media(max-width:600px) { .cards-grid,.metro-grid { grid-template-columns:1fr 1fr; } .summary-bar { flex-wrap:wrap; } .summary-item { min-width:50%; border-bottom:1px solid var(--border); } }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <h1>Texas Rebar Market Dashboard <span class="tx-badge">LONE STAR STATE</span></h1>
+      <p>State-specific leading indicators &mdash; auto-updated every Monday at 6 AM CT</p>
+    </div>
+    <span class="badge">Updated: May 06, 2026</span>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><span class="summary-count bull" id="bull-count">—</span><span class="summary-label">Bullish</span></div>
+    <div class="summary-item"><span class="summary-count bear" id="bear-count">—</span><span class="summary-label">Bearish</span></div>
+    <div class="summary-item"><span class="summary-count neutral" id="neutral-count">—</span><span class="summary-label">Neutral</span></div>
+    <div class="summary-item"><span class="summary-count verdict" id="overall-verdict">—</span><span class="summary-label">Overall signal</span></div>
+  </div>
+  <div class="section-label">Texas demand indicators</div>
+  <div class="cards-grid" id="demand-cards"></div>
+  <div class="section-label">Texas infrastructure &amp; industrial pipeline</div>
+  <div class="cards-grid" id="infra-cards"></div>
+  <div class="section-label">Texas macro &amp; energy indicators</div>
+  <div class="cards-grid" id="macro-cards"></div>
+  <div class="section-label">Metro-level construction outlook</div>
+  <div class="metro-grid" id="metro-grid"></div>
+  <div class="footer">
+    <p class="footer-note">Live data: FRED (TX permits, WTI crude). Manual indicators: TRERC forecasts, Dallas Fed, TxDOT pipeline, metro permit data. Auto-refreshed every Monday 6 AM CT via GitHub Actions.</p>
+    <span class="badge">Texas View</span>
+  </div>
+</div>
+<script>
+var demandData = [
+  {
+    "name": "TX SF Permits (fcst)",
+    "value": "169K",
+    "unit": "2026 fcst",
+    "change": "\u25b2 +4% vs 2025",
+    "signal": "bull",
+    "note": "TRERC forecast"
+  },
+  {
+    "name": "TX Statewide Permits",
+    "value": "N/A",
+    "unit": "monthly",
+    "change": "\u25b2 \u2014",
+    "signal": "neutral",
+    "note": "FRED (TXBPPRIV)"
+  },
+  {
+    "name": "TX Home Prices",
+    "value": "$334K",
+    "unit": "median",
+    "change": "\u25b2 +1.2% fcst",
+    "signal": "bull",
+    "note": "TRERC 2026 est."
+  },
+  {
+    "name": "TX Housing Inventory",
+    "value": "Elevated",
+    "unit": "",
+    "change": "\u25b2 rising YoY",
+    "signal": "bear",
+    "note": "Affordability drag"
+  },
+  {
+    "name": "TX Construction Empl.",
+    "value": "+1.8%",
+    "unit": "fcst YoY",
+    "change": "\u25b2 revised up",
+    "signal": "bull",
+    "note": "Dallas Fed May 2026"
+  },
+  {
+    "name": "TX Total Job Growth",
+    "value": "1.2%",
+    "unit": "2026 fcst",
+    "change": "\u25b2 recovering",
+    "signal": "neutral",
+    "note": "Dallas Fed lower band"
+  }
+];
+var infraData = [
+  {
+    "name": "TxDOT Biennial Budget",
+    "value": "$39.9B",
+    "unit": "FY26\u201327",
+    "change": "\u25b2 +6.5% vs prior",
+    "signal": "bull",
+    "note": "SB1 appropriation"
+  },
+  {
+    "name": "TxDOT 10-Yr UTP",
+    "value": "$146B",
+    "unit": "plan",
+    "change": "\u25b2 record level",
+    "signal": "bull",
+    "note": "2026 UTP adopted"
+  },
+  {
+    "name": "TX Water Infra.",
+    "value": "$1B/yr",
+    "unit": "dedicated",
+    "change": "\u25b2 new Prop 4",
+    "signal": "bull",
+    "note": "Through 2035"
+  },
+  {
+    "name": "Data Center Pipeline",
+    "value": "442",
+    "unit": "planned/u-c",
+    "change": "\u25b2 doubling",
+    "signal": "bull",
+    "note": "TX #2 nationally"
+  },
+  {
+    "name": "TX Construction Spend",
+    "value": "$50B+",
+    "unit": "annual",
+    "change": "\u25b2 leads nation",
+    "signal": "bull",
+    "note": "2025\u20132026 pace"
+  },
+  {
+    "name": "Material Costs (TX)",
+    "value": "Volatile",
+    "unit": "",
+    "change": "\u25b2 elevated demand",
+    "signal": "bear",
+    "note": "High-demand squeeze"
+  }
+];
+var macroData = [
+  {
+    "name": "WTI Crude Oil",
+    "value": "N/A",
+    "unit": "/bbl",
+    "change": "\u25b2 \u2014",
+    "signal": "bear",
+    "note": "FRED (DCOILWTICO)"
+  },
+  {
+    "name": "TX Well Permits",
+    "value": "Rising",
+    "unit": "",
+    "change": "\u25b2 +MoM",
+    "signal": "bull",
+    "note": "Update manually \u2014 RRC TX"
+  },
+  {
+    "name": "TX Leading Index",
+    "value": "Positive",
+    "unit": "3-mo trend",
+    "change": "\u25b2 rose Mar 2026",
+    "signal": "bull",
+    "note": "Dallas Fed"
+  },
+  {
+    "name": "TX Unemployment",
+    "value": "4.3%",
+    "unit": "",
+    "change": "\u2014 stable",
+    "signal": "neutral",
+    "note": "BLS / Dallas Fed"
+  },
+  {
+    "name": "TX Business Sentiment",
+    "value": "Moderating",
+    "unit": "",
+    "change": "\u25bc geopolitical risk",
+    "signal": "bear",
+    "note": "TBOS Apr 2026"
+  },
+  {
+    "name": "USMCA Trade Risk",
+    "value": "Elevated",
+    "unit": "",
+    "change": "\u25bc review pending",
+    "signal": "bear",
+    "note": "Cross-border impact"
+  }
+];
+var metroData = [
+  {
+    "name": "Dallas / Fort Worth",
+    "outlook": "bull",
+    "permits": "Leading TX",
+    "permits_cls": "bull",
+    "price": "-4.1%",
+    "price_cls": "bear",
+    "trend": "\u25b2 Bullish",
+    "trend_cls": "bull",
+    "note": "Tarrant Co. surge; infra-driven"
+  },
+  {
+    "name": "Houston",
+    "outlook": "bull",
+    "permits": "Stable",
+    "permits_cls": "bull",
+    "price": "+0.4%",
+    "price_cls": "bull",
+    "trend": "\u25b2 Bullish",
+    "trend_cls": "bull",
+    "note": "Industrial + energy activity"
+  },
+  {
+    "name": "Austin",
+    "outlook": "bear",
+    "permits": "Slowing",
+    "permits_cls": "bear",
+    "price": "-2.5%",
+    "price_cls": "bear",
+    "trend": "\u25bc Bearish",
+    "trend_cls": "bear",
+    "note": "Oversupply working off"
+  },
+  {
+    "name": "San Antonio",
+    "outlook": "neutral",
+    "permits": "Mixed",
+    "permits_cls": "neutral",
+    "price": "-1.8%",
+    "price_cls": "bear",
+    "trend": "\u2014 Neutral",
+    "trend_cls": "neutral",
+    "note": "Entry-level inventory overhang"
+  }
+];
+
+
+function renderMetros() {
+  var el = document.getElementById('metro-grid');
+  el.innerHTML = metroData.map(function(m) {
+    var oArr = m.outlook==='bull'?'▲ BULL':m.outlook==='bear'?'▼ BEAR':'— NEUT';
+    return '<div class="metro-card">'
+      +'<div class="metro-name">'+m.name
+      +'<span class="metro-outlook '+m.outlook+'">'+oArr+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val '+m.permits_cls+'">'+m.permits+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val '+m.price_cls+'">'+m.price+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val '+m.trend_cls+'">'+m.trend+'</span></div>'
+      +'<p class="metro-note">'+m.note+'</p></div>';
+  }).join('');
+}
+
+renderCards('demand-cards', demandData);
+renderCards('infra-cards',  infraData);
+renderCards('macro-cards',  macroData);
+renderMetros();
+countSignals([demandData, infraData, macroData]);
+</script>
+</body>
+</html>

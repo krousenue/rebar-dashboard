@@ -1,1 +1,267 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebar Market Dashboard — Global</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+function renderCards(containerId, items) {
+  var el = document.getElementById(containerId);
+  el.innerHTML = items.map(function(item) {
+    var arrow = item.signal==='bull' ? '▲ BULL' : item.signal==='bear' ? '▼ BEAR' : '— NEUT';
+    return '<div class="ind-card '+item.signal+'">'
+      +'<div class="ind-top"><span class="ind-name">'+item.name+'</span>'
+      +'<span class="signal-pill '+item.signal+'">'+arrow+'</span></div>'
+      +'<div class="ind-value '+item.signal+'">'+item.value
+      +'<span class="ind-unit">'+item.unit+'</span></div>'
+      +'<div class="ind-change '+item.signal+'">'+item.change+'</div>'
+      +'<div class="ind-meta">'+item.note+'</div></div>';
+  }).join('');
+}
+function countSignals(sections) {
+  var all = []; sections.forEach(function(s){all=all.concat(s);});
+  var bull=all.filter(function(i){return i.signal==='bull';}).length;
+  var bear=all.filter(function(i){return i.signal==='bear';}).length;
+  var neutral=all.filter(function(i){return i.signal==='neutral';}).length;
+  document.getElementById('bull-count').textContent=bull;
+  document.getElementById('bear-count').textContent=bear;
+  document.getElementById('neutral-count').textContent=neutral;
+  var v=document.getElementById('overall-verdict');
+  if(bull>bear+2){v.textContent='⬆ Leaning Bullish';v.style.color='var(--bull)';}
+  else if(bear>bull){v.textContent='⬇ Leaning Bearish';v.style.color='var(--bear)';}
+  else{v.textContent='↔ Mixed Signals';v.style.color='var(--neutral)';}
+}
+</script>
+
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --bg2: #161b26; --bg3: #1e2535;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0; --text2: #8b92a8; --text3: #555e75;
+    --bull: #3ecf8e; --bull-bg: rgba(62,207,142,0.10); --bull-border: rgba(62,207,142,0.25);
+    --bear: #f26b6b; --bear-bg: rgba(242,107,107,0.10); --bear-border: rgba(242,107,107,0.25);
+    --neutral: #8b92a8; --neutral-bg: rgba(139,146,168,0.10);
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.5; min-height:100vh; padding:2rem 1.5rem 3rem; }
+  .page { max-width:1100px; margin:0 auto; }
+  .header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:1px solid var(--border); }
+  .header-left h1 { font-size:22px; font-weight:600; letter-spacing:-0.3px; margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+  .header-left p { font-size:13px; color:var(--text2); }
+  .badge { font-size:11px; font-weight:500; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); background:var(--bg2); font-family:'DM Mono',monospace; }
+  .tx-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; background:rgba(245,166,35,0.12); border:1px solid rgba(245,166,35,0.3); color:#f5a623; letter-spacing:0.05em; }
+  .summary-bar { display:flex; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:1.75rem; overflow:hidden; }
+  .summary-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:1rem; gap:4px; border-right:1px solid var(--border); }
+  .summary-item:last-child { border-right:none; }
+  .summary-count { font-size:26px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-1px; }
+  .summary-count.bull { color:var(--bull); } .summary-count.bear { color:var(--bear); } .summary-count.neutral { color:var(--neutral); }
+  .summary-count.verdict { font-size:15px; letter-spacing:-0.3px; font-family:'DM Sans',sans-serif; text-align:center; line-height:1.3; }
+  .summary-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; font-weight:500; }
+  .section-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text3); margin:1.75rem 0 0.75rem; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .ind-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:6px; transition:border-color 0.15s; }
+  .ind-card:hover { border-color:var(--border2); }
+  .ind-card.bull { border-left:2px solid var(--bull); } .ind-card.bear { border-left:2px solid var(--bear); } .ind-card.neutral { border-left:2px solid #3a4259; }
+  .ind-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .ind-name { font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; }
+  .signal-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .signal-pill.bull { background:var(--bull-bg); color:var(--bull); border:1px solid var(--bull-border); }
+  .signal-pill.bear { background:var(--bear-bg); color:var(--bear); border:1px solid var(--bear-border); }
+  .signal-pill.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(139,146,168,0.25); }
+  .ind-value { font-size:20px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-0.5px; line-height:1; }
+  .ind-value.bull { color:var(--bull); } .ind-value.bear { color:var(--bear); } .ind-value.neutral { color:var(--text); }
+  .ind-unit { font-size:11px; font-weight:400; color:var(--text2); margin-left:4px; font-family:'DM Sans',sans-serif; }
+  .ind-change { font-size:12px; font-weight:500; }
+  .ind-change.bull { color:var(--bull); } .ind-change.bear { color:var(--bear); } .ind-change.neutral { color:var(--text2); }
+  .ind-meta { font-size:11px; color:var(--text3); }
+  .metro-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+  .metro-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+  .metro-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .metro-outlook { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; }
+  .metro-outlook.bull { background:var(--bull-bg); color:var(--bull); border:1px solid var(--bull-border); }
+  .metro-outlook.bear { background:var(--bear-bg); color:var(--bear); border:1px solid var(--bear-border); }
+  .metro-outlook.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(139,146,168,0.25); }
+  .metro-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); }
+  .metro-row:last-of-type { border-bottom:none; }
+  .metro-row-label { font-size:11px; color:var(--text3); }
+  .metro-row-val { font-size:12px; font-weight:500; }
+  .metro-row-val.bull { color:var(--bull); } .metro-row-val.bear { color:var(--bear); } .metro-row-val.neutral { color:var(--text2); }
+  .metro-note { font-size:10px; color:var(--text3); margin-top:8px; }
+  .footer { margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .footer-note { font-size:11px; color:var(--text3); max-width:620px; }
+  @media(max-width:600px) { .cards-grid,.metro-grid { grid-template-columns:1fr 1fr; } .summary-bar { flex-wrap:wrap; } .summary-item { min-width:50%; border-bottom:1px solid var(--border); } }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <h1>Rebar Market Dashboard</h1>
+      <p>Global leading indicators &mdash; auto-updated every Monday at 6 AM CT</p>
+    </div>
+    <span class="badge">Updated: May 06, 2026</span>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><span class="summary-count bull" id="bull-count">—</span><span class="summary-label">Bullish</span></div>
+    <div class="summary-item"><span class="summary-count bear" id="bear-count">—</span><span class="summary-label">Bearish</span></div>
+    <div class="summary-item"><span class="summary-count neutral" id="neutral-count">—</span><span class="summary-label">Neutral</span></div>
+    <div class="summary-item"><span class="summary-count verdict" id="overall-verdict">—</span><span class="summary-label">Overall signal</span></div>
+  </div>
+  <div class="section-label">Demand indicators</div>
+  <div class="cards-grid" id="demand-cards"></div>
+  <div class="section-label">Input cost indicators</div>
+  <div class="cards-grid" id="input-cards"></div>
+  <div class="section-label">Supply &amp; trade indicators</div>
+  <div class="cards-grid" id="trade-cards"></div>
+  <div class="section-label">Macro indicators</div>
+  <div class="cards-grid" id="macro-cards"></div>
+  <div class="footer">
+    <p class="footer-note">Live data: FRED (housing, treasury, PMI, fed funds), EIA (WTI). Manual indicators: AMM scrap, AISI utilization, SHFE futures, ABI, Dodge. Auto-refreshed every Monday 6 AM CT via GitHub Actions.</p>
+    <span class="badge">Global View</span>
+  </div>
+</div>
+<script>
+var demandData = [
+  {
+    "name": "Housing Starts",
+    "value": "N/A",
+    "unit": "ann. rate",
+    "change": "\u25b2 \u2014",
+    "signal": "neutral",
+    "note": "Census Bureau / FRED"
+  },
+  {
+    "name": "Building Permits",
+    "value": "N/A",
+    "unit": "ann. rate",
+    "change": "\u25b2 \u2014",
+    "signal": "neutral",
+    "note": "Census Bureau / FRED"
+  },
+  {
+    "name": "ABI Score",
+    "value": "48.6",
+    "unit": "index",
+    "change": "\u25bc -0.9 pts",
+    "signal": "bear",
+    "note": "Update manually \u2014 AIA"
+  },
+  {
+    "name": "Dodge Momentum",
+    "value": "171.3",
+    "unit": "index",
+    "change": "\u25b2 +2.4%",
+    "signal": "bull",
+    "note": "Update manually \u2014 Dodge"
+  }
+];
+var inputData = [
+  {
+    "name": "HMS #1 Scrap",
+    "value": "$398",
+    "unit": "/ton",
+    "change": "\u25bc -$12 WoW",
+    "signal": "bear",
+    "note": "Update manually \u2014 AMM"
+  },
+  {
+    "name": "Shredded Scrap",
+    "value": "$376",
+    "unit": "/ton",
+    "change": "\u25bc -$8 WoW",
+    "signal": "bear",
+    "note": "Update manually \u2014 AMM"
+  },
+  {
+    "name": "Natural Gas",
+    "value": "$2.14",
+    "unit": "/MMBtu",
+    "change": "\u25b2 +$0.06",
+    "signal": "neutral",
+    "note": "Update manually \u2014 Henry Hub"
+  },
+  {
+    "name": "Electricity Cost",
+    "value": "Stable",
+    "unit": "",
+    "change": "\u2014 flat",
+    "signal": "neutral",
+    "note": "Midwest industrial"
+  }
+];
+var tradeData = [
+  {
+    "name": "SHFE Rebar Futures",
+    "value": "\u00a53,082",
+    "unit": "/ton",
+    "change": "\u25b2 +0.4%",
+    "signal": "bull",
+    "note": "Update manually \u2014 SHFE"
+  },
+  {
+    "name": "US Mill Utilization",
+    "value": "74.2%",
+    "unit": "",
+    "change": "\u25bc -0.8 pts",
+    "signal": "bear",
+    "note": "Update manually \u2014 AISI"
+  },
+  {
+    "name": "Rebar Imports",
+    "value": "148K",
+    "unit": "tons",
+    "change": "\u25b2 +9% MoM",
+    "signal": "bear",
+    "note": "Update manually \u2014 Census"
+  },
+  {
+    "name": "Mill Lead Times",
+    "value": "3\u20134 wks",
+    "unit": "",
+    "change": "\u2014 flat",
+    "signal": "neutral",
+    "note": "EAF mills avg"
+  }
+];
+var macroData = [
+  {
+    "name": "10-Yr Treasury",
+    "value": "N/A",
+    "unit": "",
+    "change": "\u25b2 \u2014",
+    "signal": "bear",
+    "note": "FRED (DGS10)"
+  },
+  {
+    "name": "Fed Funds Rate",
+    "value": "N/A",
+    "unit": "",
+    "change": "\u2014 on hold",
+    "signal": "bear",
+    "note": "FRED (FEDFUNDS)"
+  },
+  {
+    "name": "ISM Mfg PMI",
+    "value": "N/A",
+    "unit": "index",
+    "change": "\u25b2 \u2014",
+    "signal": "bear",
+    "note": "FRED (NAPM)"
+  }
+];
+
+renderCards('demand-cards', demandData);
+renderCards('input-cards',  inputData);
+renderCards('trade-cards',  tradeData);
+renderCards('macro-cards',  macroData);
+countSignals([demandData, inputData, tradeData, macroData]);
+</script>
+</body>
+</html>
