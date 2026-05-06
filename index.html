@@ -1,0 +1,92 @@
+# Rebar Market Dashboard
+
+Two live dashboards that auto-update every Monday at 6 AM CT via GitHub Actions and publish to GitHub Pages.
+
+| Dashboard | URL after setup |
+|---|---|
+| Global | `https://<your-username>.github.io/rebar-dashboard/` |
+| Texas  | `https://<your-username>.github.io/rebar-dashboard/texas.html` |
+
+---
+
+## One-time setup (15 minutes)
+
+### Step 1 — Create the GitHub repository
+
+1. Go to [github.com](https://github.com) and sign in (create a free account if needed).
+2. Click **+** → **New repository**.
+3. Name it `rebar-dashboard`.
+4. Set it to **Public** (required for free GitHub Pages).
+5. Click **Create repository**.
+
+### Step 2 — Upload these files
+
+Upload the entire folder structure from this zip:
+
+```
+rebar-dashboard/
+├── .github/
+│   └── workflows/
+│       └── update-dashboards.yml
+├── docs/
+│   ├── index.html        ← global dashboard
+│   └── texas.html        ← Texas dashboard
+├── scripts/
+│   └── update_dashboards.py
+├── requirements.txt
+└── README.md
+```
+
+Easiest way: drag and drop the files in GitHub's web UI, or use GitHub Desktop.
+
+### Step 3 — Get your free API keys
+
+**FRED API key (St. Louis Fed)** — fetches housing starts, permits, Treasury rate, PMI, Fed funds rate
+1. Go to [fred.stlouisfed.org/docs/api/api_key.html](https://fred.stlouisfed.org/docs/api/api_key.html)
+2. Create a free account and request an API key (instant).
+
+**EIA API key (US Energy Information Administration)** — fetches WTI crude oil price
+1. Go to [eia.gov/opendata/register.php](https://www.eia.gov/opendata/register.php)
+2. Register for a free key (instant email delivery).
+
+### Step 4 — Add API keys as GitHub Secrets
+
+1. In your repository, go to **Settings → Secrets and variables → Actions**.
+2. Click **New repository secret** and add:
+   - Name: `FRED_API_KEY` — Value: your FRED key
+   - Name: `EIA_API_KEY` — Value: your EIA key
+
+### Step 5 — Enable GitHub Pages
+
+1. Go to **Settings → Pages**.
+2. Under **Source**, select **Deploy from a branch**.
+3. Set Branch to `main` and folder to `/docs`.
+4. Click **Save**.
+
+GitHub will show you your live URL (takes ~1 minute to activate).
+
+### Step 6 — Run it manually to verify
+
+1. Go to **Actions → Update Rebar Dashboards**.
+2. Click **Run workflow → Run workflow**.
+3. Watch the job complete (takes ~30 seconds).
+4. Visit your GitHub Pages URL — both dashboards should show today's data.
+
+---
+
+## How it works
+
+Every Monday at 6 AM CT, GitHub's scheduler triggers the workflow which:
+1. Runs `scripts/update_dashboards.py`
+2. Fetches live data from FRED and EIA APIs
+3. Rewrites `docs/index.html` and `docs/texas.html` with fresh values
+4. Commits and pushes the updated files
+5. GitHub Pages automatically serves the new HTML within ~1 minute
+
+## Manually updating indicators
+
+Some indicators (scrap prices, SHFE futures, AISI utilization, ABI score) aren't available via free APIs. To update these manually, edit the relevant values directly in `scripts/update_dashboards.py` under the `GLOBAL_INDICATORS` and `TEXAS_INDICATORS` dictionaries, then commit the change. The next automated run will use those values.
+
+## Triggering an off-schedule update
+
+Go to **Actions → Update Rebar Dashboards → Run workflow** at any time.
