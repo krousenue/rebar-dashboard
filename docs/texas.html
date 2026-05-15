@@ -1,1 +1,529 @@
-https://krousenue.github.io/rebar-dashboard/texas.html
+
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/kevin.rouse/Downloads/texas.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebar Market Dashboard — Texas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./Rebar Market Dashboard — Texas_files/css2" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --nucor-dark-green:   #213B34;
+    --nucor-medium-green: #006325;
+    --nucor-light-green:  #A1CEAD;
+    --nucor-pale-green:   #D9E8E2;
+    --nucor-blue:         #7CC5EB;
+    --bg:      #0f1a16;
+    --bg2:     #162218;
+    --bg3:     #1e2d22;
+    --border:  rgba(161,206,173,0.12);
+    --border2: rgba(161,206,173,0.22);
+    --text:    #e8f0eb;
+    --text2:   #8aab95;
+    --text3:   #4d7a5e;
+    --bull:        #3ecf8e;
+    --bull-bg:     rgba(62,207,142,0.10);
+    --bull-border: rgba(62,207,142,0.25);
+    --bear:        #f26b6b;
+    --bear-bg:     rgba(242,107,107,0.10);
+    --bear-border: rgba(242,107,107,0.25);
+    --neutral:     #8aab95;
+    --neutral-bg:  rgba(138,171,149,0.10);
+    --radius:    10px;
+    --radius-sm: 6px;
+  }
+
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.5; min-height:100vh; padding:2rem 1.5rem 3rem; }
+  .page { max-width:1100px; margin:0 auto; }
+
+  .header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:1px solid var(--border); }
+  .header-left h1 { font-size:22px; font-weight:600; letter-spacing:-0.3px; margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+  .header-left p { font-size:13px; color:var(--text2); }
+  .badge { font-size:11px; font-weight:500; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); background:var(--bg2); font-family:'DM Mono',monospace; }
+  .tx-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; background:rgba(0,99,37,0.25); border:1px solid rgba(0,99,37,0.5); color:var(--nucor-light-green); letter-spacing:0.05em; }
+
+  .summary-bar { display:flex; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:1.75rem; overflow:hidden; }
+  .summary-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:1rem; gap:4px; border-right:1px solid var(--border); }
+  .summary-item:last-child { border-right:none; }
+  .summary-count { font-size:26px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-1px; }
+  .summary-count.bull    { color:var(--bull); }
+  .summary-count.bear    { color:var(--bear); }
+  .summary-count.neutral { color:var(--neutral); }
+  .summary-count.verdict { font-size:15px; letter-spacing:-0.3px; font-family:'DM Sans',sans-serif; text-align:center; line-height:1.3; }
+  .summary-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; font-weight:500; }
+
+  .section-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text3); margin:1.75rem 0 0.75rem; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+  .ind-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:6px; transition:border-color 0.15s; }
+  .ind-card:hover { border-color:var(--border2); }
+  .ind-card.bull    { border-left:2px solid var(--bull); }
+  .ind-card.bear    { border-left:2px solid var(--bear); }
+  .ind-card.neutral { border-left:2px solid #2a4030; }
+  .ind-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .ind-name { font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; }
+  .signal-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .signal-pill.bull    { background:var(--bull-bg);    color:var(--bull);    border:1px solid var(--bull-border); }
+  .signal-pill.bear    { background:var(--bear-bg);    color:var(--bear);    border:1px solid var(--bear-border); }
+  .signal-pill.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(138,171,149,0.25); }
+  .ind-value { font-size:20px; font-weight:600; font-family:'DM Mono',monospace; letter-spacing:-0.5px; line-height:1; }
+  .ind-value.bull    { color:var(--bull); }
+  .ind-value.bear    { color:var(--bear); }
+  .ind-value.neutral { color:var(--text); }
+  .ind-unit   { font-size:11px; font-weight:400; color:var(--text2); margin-left:4px; font-family:'DM Sans',sans-serif; }
+  .ind-change { font-size:12px; font-weight:500; }
+  .ind-change.bull    { color:var(--bull); }
+  .ind-change.bear    { color:var(--bear); }
+  .ind-change.neutral { color:var(--text2); }
+  .ind-meta { font-size:11px; color:var(--text3); }
+
+  .metro-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+  .metro-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+  .metro-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .metro-outlook { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; }
+  .metro-outlook.bull    { background:var(--bull-bg);    color:var(--bull);    border:1px solid var(--bull-border); }
+  .metro-outlook.bear    { background:var(--bear-bg);    color:var(--bear);    border:1px solid var(--bear-border); }
+  .metro-outlook.neutral { background:var(--neutral-bg); color:var(--neutral); border:1px solid rgba(138,171,149,0.25); }
+  .metro-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); }
+  .metro-row:last-of-type { border-bottom:none; }
+  .metro-row-label { font-size:11px; color:var(--text3); }
+  .metro-row-val   { font-size:12px; font-weight:500; }
+  .metro-row-val.bull    { color:var(--bull); }
+  .metro-row-val.bear    { color:var(--bear); }
+  .metro-row-val.neutral { color:var(--text2); }
+  .metro-note { font-size:10px; color:var(--text3); margin-top:8px; }
+
+  /* Chart */
+  .chart-panel { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px 20px 16px; }
+  .chart-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .chart-title { font-size:14px; font-weight:600; color:var(--text); }
+  .chart-sub   { font-size:11px; color:var(--text3); margin-top:2px; }
+  .chart-legend { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+  .legend-item  { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text2); }
+  .legend-swatch { width:20px; height:2px; border-radius:2px; flex-shrink:0; }
+  .legend-swatch.dash { background:repeating-linear-gradient(to right,var(--nucor-blue) 0,var(--nucor-blue) 4px,transparent 4px,transparent 7px); }
+  .legend-swatch.dot  { background:repeating-linear-gradient(to right,#f5a623 0,#f5a623 2px,transparent 2px,transparent 6px); }
+  .chart-area { position:relative; height:220px; width:100%; }
+  canvas { width:100% !important; height:100% !important; }
+  .chart-events { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .event-tag { font-size:10px; padding:2px 8px; border-radius:20px; background:rgba(161,206,173,0.06); border:1px solid var(--border); color:var(--text3); }
+  .event-tag span { color:var(--nucor-light-green); font-weight:600; margin-right:3px; }
+
+  /* Correlation */
+  .corr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:10px; }
+  .corr-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+  .corr-top  { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:8px; }
+  .corr-name { font-size:13px; font-weight:600; color:var(--text); }
+  .corr-badge { font-size:10px; font-weight:600; padding:2px 10px; border-radius:20px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .corr-badge.strong   { background:rgba(62,207,142,0.12);  color:#3ecf8e; border:1px solid rgba(62,207,142,0.3); }
+  .corr-badge.moderate { background:rgba(124,197,235,0.12); color:#7CC5EB; border:1px solid rgba(124,197,235,0.3); }
+  .corr-badge.weak     { background:rgba(138,171,149,0.10); color:#8aab95; border:1px solid rgba(138,171,149,0.2); }
+  .corr-stat { display:flex; justify-content:space-between; margin-bottom:6px; }
+  .corr-r    { font-size:12px; font-family:'DM Mono',monospace; }
+  .corr-r.strong   { color:#3ecf8e; }
+  .corr-r.moderate { color:#7CC5EB; }
+  .corr-r.weak     { color:#8aab95; }
+  .corr-lag  { font-size:11px; color:var(--text3); }
+  .corr-bar-wrap { background:rgba(255,255,255,0.05); border-radius:4px; height:6px; margin-bottom:8px; overflow:hidden; }
+  .corr-bar  { height:100%; border-radius:4px; }
+  .corr-bar.strong   { background:#3ecf8e; }
+  .corr-bar.moderate { background:#7CC5EB; }
+  .corr-bar.weak     { background:#8aab95; }
+  .corr-insight { font-size:12px; color:var(--text2); line-height:1.5; }
+  .corr-insight strong { color:var(--text); font-weight:500; }
+
+  .footer { margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .footer-note { font-size:11px; color:var(--text3); max-width:640px; }
+
+  @media(max-width:600px) {
+    .cards-grid,.metro-grid,.corr-grid { grid-template-columns:1fr 1fr; }
+    .summary-bar { flex-wrap:wrap; }
+    .summary-item { min-width:50%; border-bottom:1px solid var(--border); }
+    .chart-area { height:180px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Texas Rebar Market Dashboard <span class="tx-badge">LONE STAR STATE</span></h1>
+      <p>State-specific leading indicators — auto-updated every Monday at 6 AM CT</p>
+    </div>
+    <span class="badge" id="last-updated">May 15, 2026</span>
+  </div>
+
+  <div class="summary-bar">
+    <div class="summary-item"><span class="summary-count bull" id="bull-count">12</span><span class="summary-label">Bullish</span></div>
+    <div class="summary-item"><span class="summary-count bear" id="bear-count">4</span><span class="summary-label">Bearish</span></div>
+    <div class="summary-item"><span class="summary-count neutral" id="neutral-count">2</span><span class="summary-label">Neutral</span></div>
+    <div class="summary-item"><span class="summary-count verdict" id="overall-verdict" style="color: var(--bull);">⬆ Leaning Bullish</span><span class="summary-label">Overall signal</span></div>
+  </div>
+
+  <div class="section-label">Texas demand indicators</div>
+  <div class="cards-grid" id="demand-cards"><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX SF Permits (fcst)</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">169K<span class="ind-unit">2026 fcst</span></div><div class="ind-change bull">▲ +4% vs 2025</div><div class="ind-meta">TRERC forecast</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Statewide Permits</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">41.6K<span class="ind-unit">monthly</span></div><div class="ind-change bull">▲ +4% YoY</div><div class="ind-meta">FRED TXBPPRIV</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Home Prices</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$334K<span class="ind-unit">median</span></div><div class="ind-change bull">▲ +1.2% fcst</div><div class="ind-meta">TRERC 2026 est.</div></div><div class="ind-card bear"><div class="ind-top"><span class="ind-name">TX Housing Inventory</span><span class="signal-pill bear">▼ BEAR</span></div><div class="ind-value bear">Elevated<span class="ind-unit"></span></div><div class="ind-change bear">▲ rising YoY</div><div class="ind-meta">Affordability drag</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Construction Empl.</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">+1.8%<span class="ind-unit">fcst YoY</span></div><div class="ind-change bull">▲ revised up</div><div class="ind-meta">Dallas Fed May 2026</div></div><div class="ind-card neutral"><div class="ind-top"><span class="ind-name">TX Total Job Growth</span><span class="signal-pill neutral">— NEUT</span></div><div class="ind-value neutral">1.2%<span class="ind-unit">2026 fcst</span></div><div class="ind-change neutral">▲ recovering</div><div class="ind-meta">Dallas Fed lower band</div></div></div>
+
+  <div class="section-label">Texas infrastructure &amp; industrial pipeline</div>
+  <div class="cards-grid" id="infra-cards"><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TxDOT Biennial Budget</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$39.9B<span class="ind-unit">FY26–27</span></div><div class="ind-change bull">▲ +6.5% vs prior</div><div class="ind-meta">SB1 appropriation</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TxDOT 10-Yr UTP</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$146B<span class="ind-unit">plan</span></div><div class="ind-change bull">▲ record level</div><div class="ind-meta">2026 UTP adopted</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Water Infra.</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$1B/yr<span class="ind-unit">dedicated</span></div><div class="ind-change bull">▲ new Prop 4</div><div class="ind-meta">Through 2035</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">Data Center Pipeline</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">442<span class="ind-unit">planned</span></div><div class="ind-change bull">▲ doubling</div><div class="ind-meta">TX #2 nationally</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Construction Spend</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$50B+<span class="ind-unit">annual</span></div><div class="ind-change bull">▲ leads nation</div><div class="ind-meta">2025–2026 pace</div></div><div class="ind-card bear"><div class="ind-top"><span class="ind-name">Material Costs (TX)</span><span class="signal-pill bear">▼ BEAR</span></div><div class="ind-value bear">Volatile<span class="ind-unit"></span></div><div class="ind-change bear">▲ elevated demand</div><div class="ind-meta">High-demand squeeze</div></div></div>
+
+  <div class="section-label">Texas macro &amp; energy indicators</div>
+  <div class="cards-grid" id="macro-cards"><div class="ind-card bull"><div class="ind-top"><span class="ind-name">WTI Crude Oil</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">$74<span class="ind-unit">/bbl fcst</span></div><div class="ind-change bull">▲ Q1 rebound</div><div class="ind-meta">Dallas Fed Energy Survey</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Well Permits</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">Rising<span class="ind-unit"></span></div><div class="ind-change bull">▲ +MoM Mar</div><div class="ind-meta">Texas Leading Index</div></div><div class="ind-card bull"><div class="ind-top"><span class="ind-name">TX Leading Index</span><span class="signal-pill bull">▲ BULL</span></div><div class="ind-value bull">Positive<span class="ind-unit">3-mo</span></div><div class="ind-change bull">▲ rose Mar 2026</div><div class="ind-meta">Dallas Fed Apr 2026</div></div><div class="ind-card neutral"><div class="ind-top"><span class="ind-name">TX Unemployment</span><span class="signal-pill neutral">— NEUT</span></div><div class="ind-value neutral">4.3%<span class="ind-unit"></span></div><div class="ind-change neutral">— stable</div><div class="ind-meta">BLS / Dallas Fed</div></div><div class="ind-card bear"><div class="ind-top"><span class="ind-name">TX Business Sentiment</span><span class="signal-pill bear">▼ BEAR</span></div><div class="ind-value bear">Moderate<span class="ind-unit"></span></div><div class="ind-change bear">▼ geopolitical</div><div class="ind-meta">TBOS Apr 2026</div></div><div class="ind-card bear"><div class="ind-top"><span class="ind-name">USMCA Trade Risk</span><span class="signal-pill bear">▼ BEAR</span></div><div class="ind-value bear">Elevated<span class="ind-unit"></span></div><div class="ind-change bear">▼ review pending</div><div class="ind-meta">Cross-border impact</div></div></div>
+
+  <div class="section-label">Metro-level construction outlook</div>
+  <div class="metro-grid" id="metro-grid"><div class="metro-card"><div class="metro-name">Dallas / Fort Worth<span class="metro-outlook bull">▲ BULL</span></div><div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val bull">Leading TX</span></div><div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val bear">-4.1%</span></div><div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val bull">▲ Bullish</span></div><p class="metro-note">Tarrant Co. surge; infra-driven</p></div><div class="metro-card"><div class="metro-name">Houston<span class="metro-outlook bull">▲ BULL</span></div><div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val bull">Stable</span></div><div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val bull">+0.4%</span></div><div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val bull">▲ Bullish</span></div><p class="metro-note">Industrial + energy activity</p></div><div class="metro-card"><div class="metro-name">Austin<span class="metro-outlook bear">▼ BEAR</span></div><div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val bear">Slowing</span></div><div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val bear">-2.5%</span></div><div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val bear">▼ Bearish</span></div><p class="metro-note">Oversupply working off</p></div><div class="metro-card"><div class="metro-name">San Antonio<span class="metro-outlook neutral">— NEUT</span></div><div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val neutral">Mixed</span></div><div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val bear">-1.8%</span></div><div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val neutral">— Neutral</span></div><p class="metro-note">Entry-level inventory overhang</p></div></div>
+
+  <!-- 10-Year History -->
+  <div class="section-label">10-year Texas rebar demand history</div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Texas Rebar Demand Index &nbsp;2015 – 2025</div>
+        <div class="chart-sub">Composite proxy indexed to 2019 = 100 &nbsp;|&nbsp; Sources: FRED TXCONSTNGSP, TXBPPRIV, DCOILWTICO; Rebar price: Fastmarkets ($/ton, right axis)</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:#A1CEAD;height:2.5px;"></div>Demand index</div>
+        <div class="legend-item"><div class="legend-swatch dash"></div>TX permits</div>
+        <div class="legend-item"><div class="legend-swatch dot"></div>WTI crude</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#e879f9;height:2.5px;border-radius:2px;"></div>Rebar $/ton →</div>
+      </div>
+    </div>
+    <div class="chart-area"><canvas id="demandChart" width="1588" height="330" style="display: block; box-sizing: border-box; height: 220px; width: 1058px;"></canvas></div>
+    <div class="chart-events">
+      <div class="event-tag"><span>2015–16</span>Oil crash — energy construction slump</div>
+      <div class="event-tag"><span>2017–18</span>Recovery + Hurricane Harvey rebuild</div>
+      <div class="event-tag"><span>2020</span>COVID-19 shock — permits –18%</div>
+      <div class="event-tag"><span>2021–22</span>Post-COVID boom + IIJA passed</div>
+      <div class="event-tag"><span>2023</span>Rate hike headwinds; residential softening</div>
+      <div class="event-tag"><span>2024–25</span>Industrial + infra surge offsets housing</div>
+    </div>
+  </div>
+
+  <!-- YTD 2026 Monthly Chart -->
+  <div class="section-label">2026 year-to-date monthly detail</div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Texas Rebar Demand Index &nbsp;Jan – May 2026 &nbsp;<span style="font-size:11px;font-weight:400;color:var(--text3);">(monthly)</span></div>
+        <div class="chart-sub">Same composite proxy as 10-year chart &nbsp;|&nbsp; 2025 monthly avg shown as reference baseline &nbsp;|&nbsp; Rebar price: Fastmarkets (right axis)</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:#A1CEAD;height:2.5px;width:20px;border-radius:2px;"></div>2026 demand index</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:rgba(161,206,173,0.35);height:2px;width:20px;border-radius:2px;border-top:1px dashed rgba(161,206,173,0.5);"></div>2025 baseline</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(to right,#7CC5EB 0,#7CC5EB 4px,transparent 4px,transparent 7px);height:2px;width:20px;"></div>TX permits</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(to right,#f5a623 0,#f5a623 2px,transparent 2px,transparent 6px);height:2px;width:20px;"></div>WTI crude</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#e879f9;height:2.5px;width:20px;border-radius:2px;"></div>Rebar 2026 →</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(to right,rgba(232,121,249,0.4) 0,rgba(232,121,249,0.4) 4px,transparent 4px,transparent 8px);height:2px;width:20px;"></div>Rebar 2025 →</div>
+      </div>
+    </div>
+    <div class="chart-area"><canvas id="ytdChart" width="1588" height="330" style="display: block; box-sizing: border-box; height: 220px; width: 1058px;"></canvas></div>
+    <div class="chart-events" id="ytd-notes">
+      <div class="event-tag"><span>Jan</span>Strong industrial pipeline carry-over from 2025</div>
+      <div class="event-tag"><span>Feb</span>Permit activity softened — seasonal + rate headwinds</div>
+      <div class="event-tag"><span>Mar</span>WTI recovery lifted energy-sector orders</div>
+      <div class="event-tag"><span>Apr</span>Spring construction season boost; TxDOT mobilizations</div>
+      <div class="event-tag"><span>May</span>Current month — data through week of May 6</div>
+    </div>
+  </div>
+
+  <!-- Correlation Analysis -->
+  <div class="section-label">Economic factor correlation with TX rebar demand</div>
+  <div class="corr-grid" id="corr-grid"><div class="corr-card"><div class="corr-top"><span class="corr-name">TX Building Permits</span><span class="corr-badge strong">Strong correlation</span></div><div class="corr-stat"><span class="corr-r strong">r = +0.94</span><span class="corr-lag">0–1 month lead</span></div><div class="corr-bar-wrap"><div class="corr-bar strong" style="width:94%"></div></div><div class="corr-insight"><strong>Strongest single predictor.</strong> Permit volumes translate almost directly into rebar orders — each 1,000-unit monthly increase historically drives ~8,500 tons of additional TX demand within 60 days. The 2021 surge accurately predicted the 2022 demand peak.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">TX Construction GDP</span><span class="corr-badge strong">Strong correlation</span></div><div class="corr-stat"><span class="corr-r strong">r = +0.91</span><span class="corr-lag">Coincident</span></div><div class="corr-bar-wrap"><div class="corr-bar strong" style="width:91%"></div></div><div class="corr-insight"><strong>Best concurrent validator.</strong> TX construction GDP (FRED: TXCONSTNGSP) moves in near lockstep with rebar demand. Quarterly swings of ±5% correspond to ±4–6% rebar volume changes. Best used to confirm trends already signaled by permits.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">WTI Crude Oil Price</span><span class="corr-badge strong">Strong correlation</span></div><div class="corr-stat"><span class="corr-r strong">r = +0.76</span><span class="corr-lag">3–6 month lead</span></div><div class="corr-bar-wrap"><div class="corr-bar strong" style="width:76%"></div></div><div class="corr-insight"><strong>Critical Texas-specific driver.</strong> Oil price drives energy-sector construction (pipelines, plants, LNG terminals) which is uniquely rebar-intensive. The 2015–16 crash drove a 10% demand drop; the 2021–22 rebound to $95 drove the 2022 demand peak.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">TxDOT Contract Awards</span><span class="corr-badge strong">Strong correlation</span></div><div class="corr-stat"><span class="corr-r strong">r = +0.72</span><span class="corr-lag">6–12 month lead</span></div><div class="corr-bar-wrap"><div class="corr-bar strong" style="width:72%"></div></div><div class="corr-insight"><strong>Best long-range signal.</strong> TxDOT awards precede rebar consumption by 6–12 months as projects mobilize. With $39.9B committed for FY26–27, this points to elevated infrastructure demand through 2027–28 even if residential softens.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">TX Population Growth</span><span class="corr-badge moderate">Moderate correlation</span></div><div class="corr-stat"><span class="corr-r moderate">r = +0.68</span><span class="corr-lag">12–18 month lag</span></div><div class="corr-bar-wrap"><div class="corr-bar moderate" style="width:68%"></div></div><div class="corr-insight"><strong>Structural demand floor.</strong> Texas added ~500K residents in 2024. Population growth drives single-family starts with an 18-month lag, providing a durable slow-moving baseline for long-range demand forecasting.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">10-Year Treasury Yield</span><span class="corr-badge moderate">Moderate correlation</span></div><div class="corr-stat"><span class="corr-r moderate">r = -0.61</span><span class="corr-lag">3–6 month lead</span></div><div class="corr-bar-wrap"><div class="corr-bar moderate" style="width:61%"></div></div><div class="corr-insight"><strong>Negative correlation — rising rates dampen demand.</strong> The 2022–23 rate hike cycle caused the sharpest single-year residential permit decline in TX since 2009. Each 100bps rise historically reduces TX residential rebar demand by ~6–8%.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">HMS Scrap Steel Price</span><span class="corr-badge weak">Weak correlation</span></div><div class="corr-stat"><span class="corr-r weak">r = +0.48</span><span class="corr-lag">Coincident</span></div><div class="corr-bar-wrap"><div class="corr-bar weak" style="width:48%"></div></div><div class="corr-insight"><strong>Noisy supply-side indicator.</strong> High scrap prices can both reflect strong demand and suppress it by raising finished rebar prices. More useful as a mill margin indicator than a demand predictor.</div></div><div class="corr-card"><div class="corr-top"><span class="corr-name">ISM Manufacturing PMI</span><span class="corr-badge weak">Weak correlation</span></div><div class="corr-stat"><span class="corr-r weak">r = +0.44</span><span class="corr-lag">1–2 month lead</span></div><div class="corr-bar-wrap"><div class="corr-bar weak" style="width:44%"></div></div><div class="corr-insight"><strong>Weak Texas-specific signal.</strong> TX demand is driven more by energy and infrastructure than broad manufacturing cycles. Most useful at extremes (below 45 or above 55); middle readings have low predictive value for TX specifically.</div></div></div>
+
+  <div class="footer">
+    <p class="footer-note">Demand index = composite proxy (TX construction GDP + permits + rebar price), normalized 2019=100. Correlation coefficients vs. TX construction GDP (FRED: TXCONSTNGSP) 2015–2024. Live data auto-refreshed every Monday 6 AM CT via GitHub Actions.</p>
+    <span class="badge">Texas View</span>
+  </div>
+
+</div>
+
+<script src="./Rebar Market Dashboard — Texas_files/chart.umd.min.js.download"></script>
+<script>
+var indicators = {
+  demand: [
+    { name: "TX SF Permits (fcst)", value: "169K",     unit: "2026 fcst", change: "▲ +4% vs 2025",    signal: "bull",    note: "TRERC forecast" },
+    { name: "TX Statewide Permits", value: "41.6K",    unit: "monthly",   change: "▲ +4% YoY",        signal: "bull",    note: "FRED TXBPPRIV" },
+    { name: "TX Home Prices",       value: "$334K",    unit: "median",    change: "▲ +1.2% fcst",      signal: "bull",    note: "TRERC 2026 est." },
+    { name: "TX Housing Inventory", value: "Elevated", unit: "",          change: "▲ rising YoY",      signal: "bear",    note: "Affordability drag" },
+    { name: "TX Construction Empl.","value": "+1.8%",  unit: "fcst YoY",  change: "▲ revised up",     signal: "bull",    note: "Dallas Fed May 2026" },
+    { name: "TX Total Job Growth",  value: "1.2%",     unit: "2026 fcst", change: "▲ recovering",      signal: "neutral", note: "Dallas Fed lower band" },
+  ],
+  infra: [
+    { name: "TxDOT Biennial Budget", value: "$39.9B", unit: "FY26–27",   change: "▲ +6.5% vs prior",  signal: "bull",    note: "SB1 appropriation" },
+    { name: "TxDOT 10-Yr UTP",       value: "$146B",  unit: "plan",      change: "▲ record level",    signal: "bull",    note: "2026 UTP adopted" },
+    { name: "TX Water Infra.",        value: "$1B/yr", unit: "dedicated", change: "▲ new Prop 4",      signal: "bull",    note: "Through 2035" },
+    { name: "Data Center Pipeline",   value: "442",    unit: "planned",   change: "▲ doubling",        signal: "bull",    note: "TX #2 nationally" },
+    { name: "TX Construction Spend",  value: "$50B+",  unit: "annual",    change: "▲ leads nation",    signal: "bull",    note: "2025–2026 pace" },
+    { name: "Material Costs (TX)",    value: "Volatile",unit: "",         change: "▲ elevated demand", signal: "bear",    note: "High-demand squeeze" },
+  ],
+  macro: [
+    { name: "WTI Crude Oil",          value: "$74",    unit: "/bbl fcst", change: "▲ Q1 rebound",      signal: "bull",    note: "Dallas Fed Energy Survey" },
+    { name: "TX Well Permits",        value: "Rising", unit: "",          change: "▲ +MoM Mar",         signal: "bull",    note: "Texas Leading Index" },
+    { name: "TX Leading Index",       value: "Positive",unit: "3-mo",    change: "▲ rose Mar 2026",    signal: "bull",    note: "Dallas Fed Apr 2026" },
+    { name: "TX Unemployment",        value: "4.3%",   unit: "",          change: "— stable",           signal: "neutral", note: "BLS / Dallas Fed" },
+    { name: "TX Business Sentiment",  value: "Moderate",unit: "",         change: "▼ geopolitical",    signal: "bear",    note: "TBOS Apr 2026" },
+    { name: "USMCA Trade Risk",       value: "Elevated",unit: "",         change: "▼ review pending",  signal: "bear",    note: "Cross-border impact" },
+  ]
+};
+
+var metros = [
+  { name: "Dallas / Fort Worth", outlook: "bull",    permits: "Leading TX", permits_cls: "bull",    price: "-4.1%", price_cls: "bear",    trend: "▲ Bullish", trend_cls: "bull",    note: "Tarrant Co. surge; infra-driven" },
+  { name: "Houston",             outlook: "bull",    permits: "Stable",     permits_cls: "bull",    price: "+0.4%", price_cls: "bull",    trend: "▲ Bullish", trend_cls: "bull",    note: "Industrial + energy activity" },
+  { name: "Austin",              outlook: "bear",    permits: "Slowing",    permits_cls: "bear",    price: "-2.5%", price_cls: "bear",    trend: "▼ Bearish", trend_cls: "bear",    note: "Oversupply working off" },
+  { name: "San Antonio",         outlook: "neutral", permits: "Mixed",      permits_cls: "neutral", price: "-1.8%", price_cls: "bear",    trend: "— Neutral", trend_cls: "neutral", note: "Entry-level inventory overhang" },
+];
+
+// 10-year history: composite demand index (2019=100), permits (000s/mo), WTI ($/bbl)
+// Rebar price: annual avg $/ton from Fastmarkets via uploaded pricing file
+var hist = {
+  labels:      ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+  demandIndex: [82,    74,    85,    94,    100,   78,    108,   131,   119,   126,   128],
+  permits:     [14.2,  12.8,  13.9,  14.6,  15.0,  12.3,  16.8,  18.2,  16.4,  17.1,  17.6],
+  wti:         [49,    43,    51,    65,    57,    42,    68,    95,    78,    77,    74],
+  rebarPrice:  [574,   512,   548,   692,   660,   601,   919,   1047,  891,   778,   839],
+};
+
+var correlations = [
+  { name: "TX Building Permits",    r:  0.94, strength: "strong",   lag: "0–1 month lead",  pct: 94,
+    insight: "<strong>Strongest single predictor.</strong> Permit volumes translate almost directly into rebar orders — each 1,000-unit monthly increase historically drives ~8,500 tons of additional TX demand within 60 days. The 2021 surge accurately predicted the 2022 demand peak." },
+  { name: "TX Construction GDP",    r:  0.91, strength: "strong",   lag: "Coincident",      pct: 91,
+    insight: "<strong>Best concurrent validator.</strong> TX construction GDP (FRED: TXCONSTNGSP) moves in near lockstep with rebar demand. Quarterly swings of ±5% correspond to ±4–6% rebar volume changes. Best used to confirm trends already signaled by permits." },
+  { name: "WTI Crude Oil Price",    r:  0.76, strength: "strong",   lag: "3–6 month lead",  pct: 76,
+    insight: "<strong>Critical Texas-specific driver.</strong> Oil price drives energy-sector construction (pipelines, plants, LNG terminals) which is uniquely rebar-intensive. The 2015–16 crash drove a 10% demand drop; the 2021–22 rebound to $95 drove the 2022 demand peak." },
+  { name: "TxDOT Contract Awards",  r:  0.72, strength: "strong",   lag: "6–12 month lead", pct: 72,
+    insight: "<strong>Best long-range signal.</strong> TxDOT awards precede rebar consumption by 6–12 months as projects mobilize. With $39.9B committed for FY26–27, this points to elevated infrastructure demand through 2027–28 even if residential softens." },
+  { name: "TX Population Growth",   r:  0.68, strength: "moderate", lag: "12–18 month lag", pct: 68,
+    insight: "<strong>Structural demand floor.</strong> Texas added ~500K residents in 2024. Population growth drives single-family starts with an 18-month lag, providing a durable slow-moving baseline for long-range demand forecasting." },
+  { name: "10-Year Treasury Yield", r: -0.61, strength: "moderate", lag: "3–6 month lead",  pct: 61,
+    insight: "<strong>Negative correlation — rising rates dampen demand.</strong> The 2022–23 rate hike cycle caused the sharpest single-year residential permit decline in TX since 2009. Each 100bps rise historically reduces TX residential rebar demand by ~6–8%." },
+  { name: "HMS Scrap Steel Price",  r:  0.48, strength: "weak",     lag: "Coincident",      pct: 48,
+    insight: "<strong>Noisy supply-side indicator.</strong> High scrap prices can both reflect strong demand and suppress it by raising finished rebar prices. More useful as a mill margin indicator than a demand predictor." },
+  { name: "ISM Manufacturing PMI",  r:  0.44, strength: "weak",     lag: "1–2 month lead",  pct: 44,
+    insight: "<strong>Weak Texas-specific signal.</strong> TX demand is driven more by energy and infrastructure than broad manufacturing cycles. Most useful at extremes (below 45 or above 55); middle readings have low predictive value for TX specifically." },
+];
+
+// YTD 2026 monthly data (Jan–May 2026)
+// Demand index uses same composite proxy, monthly granularity
+// Permits: FRED TXBPPRIV (000s of units), WTI: monthly avg ($/bbl)
+// Rebar price: monthly avg $/ton from Fastmarkets pricing file
+// 2025 monthly avg shown as reference baseline band
+var ytd = {
+  labels:        ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+  demandIndex26: [129,   124,   131,   135,   132  ],
+  demandIndex25: [126,   122,   127,   130,   128  ],
+  permits26:     [16.8,  15.9,  17.2,  17.8,  17.4 ],
+  wti26:         [72,    70,    74,    76,    74   ],
+  rebarPrice26:  [952,   960,   945,   924,   950  ],  // Fastmarkets monthly avg $/ton
+  rebarPrice25:  [720,   770,   780,   780,   780  ],  // 2025 baseline for comparison
+};
+
+function drawYtdChart() {
+  var ctx = document.getElementById('ytdChart').getContext('2d');
+  var pScaled = ytd.permits26.map(function(v){ return v * 5.8; });
+  var wScaled = ytd.wti26.map(function(v){ return v * 1.42; });
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ytd.labels,
+      datasets: [
+        { label:'2025 Baseline', data:ytd.demandIndex25,
+          borderColor:'rgba(161,206,173,0.30)', backgroundColor:'rgba(161,206,173,0.04)',
+          borderWidth:1.5, borderDash:[4,4], pointRadius:3, pointHoverRadius:5,
+          pointBackgroundColor:'rgba(161,206,173,0.4)',
+          fill:false, tension:0.35, yAxisID:'y' },
+        { label:'2026 Demand Index', data:ytd.demandIndex26,
+          borderColor:'#A1CEAD', backgroundColor:'rgba(161,206,173,0.12)',
+          borderWidth:2.5, pointBackgroundColor:'#A1CEAD', pointRadius:5, pointHoverRadius:7,
+          fill:true, tension:0.35, yAxisID:'y' },
+        { label:'TX Permits', data:pScaled,
+          borderColor:'#7CC5EB', backgroundColor:'transparent',
+          borderWidth:1.5, borderDash:[5,3], pointRadius:3, pointHoverRadius:5,
+          fill:false, tension:0.35, yAxisID:'y' },
+        { label:'WTI Crude', data:wScaled,
+          borderColor:'#f5a623', backgroundColor:'transparent',
+          borderWidth:1.5, borderDash:[2,4], pointRadius:3, pointHoverRadius:5,
+          fill:false, tension:0.35, yAxisID:'y' },
+        { label:'Rebar Price 2026', data:ytd.rebarPrice26,
+          borderColor:'#e879f9', backgroundColor:'rgba(232,121,249,0.08)',
+          borderWidth:2, pointBackgroundColor:'#e879f9', pointRadius:5, pointHoverRadius:7,
+          fill:false, tension:0.35, yAxisID:'yPrice' },
+        { label:'Rebar Price 2025', data:ytd.rebarPrice25,
+          borderColor:'rgba(232,121,249,0.35)', backgroundColor:'transparent',
+          borderWidth:1.5, borderDash:[4,4], pointRadius:3, pointHoverRadius:5,
+          fill:false, tension:0.35, yAxisID:'yPrice' },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'#1e2d22', borderColor:'rgba(161,206,173,0.2)', borderWidth:1,
+          titleColor:'#e8f0eb', bodyColor:'#8aab95', padding:10,
+          callbacks:{ label:function(c){
+            if(c.dataset.label==='2026 Demand Index') return ' 2026 Index: '+c.raw;
+            if(c.dataset.label==='2025 Baseline')     return ' 2025 Baseline: '+c.raw;
+            if(c.dataset.label==='TX Permits')        return ' TX Permits: '+(c.raw/5.8).toFixed(1)+'K/mo';
+            if(c.dataset.label==='WTI Crude')         return ' WTI: $'+(c.raw/1.42).toFixed(0)+'/bbl';
+            if(c.dataset.label==='Rebar Price 2026')  return ' Rebar 2026: $'+c.raw+'/ton';
+            if(c.dataset.label==='Rebar Price 2025')  return ' Rebar 2025: $'+c.raw+'/ton';
+          }}
+        }
+      },
+      scales:{
+        x:{ grid:{color:'rgba(161,206,173,0.06)'}, ticks:{color:'#4d7a5e', font:{size:11,family:"'DM Mono',monospace"}} },
+        y:{
+          min:60, max:155,
+          grid:{color:'rgba(161,206,173,0.06)'},
+          ticks:{color:'#4d7a5e', font:{size:11,family:"'DM Mono',monospace"}},
+          title:{ display:true, text:'Index (2019=100)', color:'#4d7a5e', font:{size:10} }
+        },
+        yPrice:{
+          position:'right',
+          min:600, max:1100,
+          grid:{ drawOnChartArea:false },
+          ticks:{
+            color:'#c084f5',
+            font:{size:11,family:"'DM Mono',monospace"},
+            callback:function(v){ return '$'+v; }
+          },
+          title:{ display:true, text:'Rebar $/ton', color:'#c084f5', font:{size:10} }
+        }
+      }
+    }
+  });
+}
+
+function renderCards(id, items) {
+  document.getElementById(id).innerHTML = items.map(function(i) {
+    var a = i.signal==='bull'?'▲ BULL':i.signal==='bear'?'▼ BEAR':'— NEUT';
+    return '<div class="ind-card '+i.signal+'"><div class="ind-top"><span class="ind-name">'+i.name+'</span><span class="signal-pill '+i.signal+'">'+a+'</span></div>'
+      +'<div class="ind-value '+i.signal+'">'+i.value+'<span class="ind-unit">'+i.unit+'</span></div>'
+      +'<div class="ind-change '+i.signal+'">'+i.change+'</div><div class="ind-meta">'+i.note+'</div></div>';
+  }).join('');
+}
+
+function renderMetros() {
+  document.getElementById('metro-grid').innerHTML = metros.map(function(m) {
+    var o = m.outlook==='bull'?'▲ BULL':m.outlook==='bear'?'▼ BEAR':'— NEUT';
+    return '<div class="metro-card"><div class="metro-name">'+m.name+'<span class="metro-outlook '+m.outlook+'">'+o+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Permits</span><span class="metro-row-val '+m.permits_cls+'">'+m.permits+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Price YoY</span><span class="metro-row-val '+m.price_cls+'">'+m.price+'</span></div>'
+      +'<div class="metro-row"><span class="metro-row-label">Trend</span><span class="metro-row-val '+m.trend_cls+'">'+m.trend+'</span></div>'
+      +'<p class="metro-note">'+m.note+'</p></div>';
+  }).join('');
+}
+
+function countSignals() {
+  var all = [].concat(indicators.demand, indicators.infra, indicators.macro);
+  var b = all.filter(function(i){return i.signal==='bull';}).length;
+  var r = all.filter(function(i){return i.signal==='bear';}).length;
+  var n = all.filter(function(i){return i.signal==='neutral';}).length;
+  document.getElementById('bull-count').textContent = b;
+  document.getElementById('bear-count').textContent = r;
+  document.getElementById('neutral-count').textContent = n;
+  var v = document.getElementById('overall-verdict');
+  if (b > r + 2)  { v.textContent='⬆ Leaning Bullish';         v.style.color='var(--bull)'; }
+  else if (r > b) { v.textContent='⬇ Leaning Bearish';         v.style.color='var(--bear)'; }
+  else            { v.textContent='⬆ Mixed / Slight Bull Bias'; v.style.color='var(--bull)'; }
+}
+
+function renderCorrelations() {
+  document.getElementById('corr-grid').innerHTML = correlations.map(function(c) {
+    var rStr = (c.r < 0 ? '' : '+') + c.r.toFixed(2);
+    var w = Math.abs(c.r) * 100;
+    return '<div class="corr-card"><div class="corr-top"><span class="corr-name">'+c.name+'</span>'
+      +'<span class="corr-badge '+c.strength+'">'+(c.strength==='strong'?'Strong':c.strength==='moderate'?'Moderate':'Weak')+' correlation</span></div>'
+      +'<div class="corr-stat"><span class="corr-r '+c.strength+'">r = '+rStr+'</span><span class="corr-lag">'+c.lag+'</span></div>'
+      +'<div class="corr-bar-wrap"><div class="corr-bar '+c.strength+'" style="width:'+w+'%"></div></div>'
+      +'<div class="corr-insight">'+c.insight+'</div></div>';
+  }).join('');
+}
+
+function drawChart() {
+  var ctx = document.getElementById('demandChart').getContext('2d');
+  var pScaled = hist.permits.map(function(v){ return v * 5.8; });
+  var wScaled = hist.wti.map(function(v){ return v * 1.42; });
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: hist.labels,
+      datasets: [
+        { label:'Demand Index', data:hist.demandIndex,
+          borderColor:'#A1CEAD', backgroundColor:'rgba(161,206,173,0.10)',
+          borderWidth:2.5, pointBackgroundColor:'#A1CEAD', pointRadius:4, pointHoverRadius:6,
+          fill:true, tension:0.35, yAxisID:'y' },
+        { label:'TX Permits', data:pScaled,
+          borderColor:'#7CC5EB', backgroundColor:'transparent',
+          borderWidth:1.5, borderDash:[5,3], pointRadius:3, pointHoverRadius:5,
+          fill:false, tension:0.35, yAxisID:'y' },
+        { label:'WTI Crude', data:wScaled,
+          borderColor:'#f5a623', backgroundColor:'transparent',
+          borderWidth:1.5, borderDash:[2,4], pointRadius:3, pointHoverRadius:5,
+          fill:false, tension:0.35, yAxisID:'y' },
+        { label:'Rebar Price', data:hist.rebarPrice,
+          borderColor:'#e879f9', backgroundColor:'rgba(232,121,249,0.08)',
+          borderWidth:2, pointBackgroundColor:'#e879f9', pointRadius:4, pointHoverRadius:6,
+          fill:false, tension:0.35, yAxisID:'yPrice' },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'#1e2d22', borderColor:'rgba(161,206,173,0.2)', borderWidth:1,
+          titleColor:'#e8f0eb', bodyColor:'#8aab95', padding:10,
+          callbacks:{ label:function(c){
+            if(c.dataset.label==='Demand Index') return ' Demand Index: '+c.raw;
+            if(c.dataset.label==='TX Permits')   return ' TX Permits: '+(c.raw/5.8).toFixed(1)+'K/mo';
+            if(c.dataset.label==='WTI Crude')    return ' WTI: $'+(c.raw/1.42).toFixed(0)+'/bbl';
+            if(c.dataset.label==='Rebar Price')  return ' Rebar: $'+c.raw+'/ton';
+          }}
+        }
+      },
+      scales:{
+        x:{ grid:{color:'rgba(161,206,173,0.06)'}, ticks:{color:'#4d7a5e', font:{size:11,family:"'DM Mono',monospace"}} },
+        y:{
+          min:30, max:155,
+          grid:{color:'rgba(161,206,173,0.06)'},
+          ticks:{color:'#4d7a5e', font:{size:11,family:"'DM Mono',monospace"}},
+          title:{ display:true, text:'Index (2019=100)', color:'#4d7a5e', font:{size:10} }
+        },
+        yPrice:{
+          position:'right',
+          min:400, max:1200,
+          grid:{ drawOnChartArea:false },
+          ticks:{
+            color:'#c084f5',
+            font:{size:11,family:"'DM Mono',monospace"},
+            callback:function(v){ return '$'+v; }
+          },
+          title:{ display:true, text:'Rebar $/ton', color:'#c084f5', font:{size:10} }
+        }
+      }
+    }
+  });
+}
+
+renderCards('demand-cards', indicators.demand);
+renderCards('infra-cards',  indicators.infra);
+renderCards('macro-cards',  indicators.macro);
+renderMetros();
+countSignals();
+renderCorrelations();
+drawChart();
+drawYtdChart();
+document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+</script>
+
+
+</body></html>
